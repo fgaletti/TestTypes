@@ -127,6 +127,9 @@ namespace TestTypes
             Console.WriteLine(0.0 / 0.0); // NaN 
             Console.WriteLine (( 1.0 / 0.0)- (1.0 / 0.0)); // NaN
 
+            Console.WriteLine((1.0 / 0.0) - (-1.0 )); // ??
+
+
             // When using = =, a NaN value is never equal to another value, even another NaN value: 
             Console.WriteLine(0.0 / 0.0 == double.NaN); // False
 
@@ -142,7 +145,12 @@ namespace TestTypes
 
             // Go to http://aka.ms/dotnet-get-started-console to continue learning how to build a console app! 
 
-           
+            // get vowels
+            string[] list = { "ABC", "Francisco" };
+            IEnumerable<string> query = from n in list
+                                        where n[0] ==  "F".ToCharArray()[0]
+                                        select n;
+
         }
         //vversion 7.2
         //void  Foo(in int x)

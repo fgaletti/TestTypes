@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,22 @@ namespace TestTypes
         {
             // The code provided will print ‘Hello World’ to the console.
             // Press Ctrl+F5 (or go to Debug > Start Without Debugging) to run your app.
+
+            string[] fullnames = { "Anne Williams", "John SOTO", "Juan Perez" };
+
+            IEnumerable<string> queryMany = from full in fullnames
+                                        from name2 in full.Split()
+                                        select name2;
+
+            IEnumerable<string> queryMany2 = fullnames.SelectMany(nn => nn.Split());
+
+
+
+            foreach (var item in queryMany)
+            {
+                Console.WriteLine(item);
+            }
+            Console.ReadLine();
 
             childClass1 child1 = new childClass1();
             child1.fieldProtected = 65;
@@ -151,6 +168,43 @@ namespace TestTypes
                                         where n[0] ==  "F".ToCharArray()[0]
                                         select n;
 
+
+            //OTHER FORMATS
+            decimal value = 123.456m;
+            Console.WriteLine("Your account balance is {0:C3}.", value);
+
+            Console.ReadKey();
+
+
+            string name = "Rob";
+            int age = 21;
+            Console.WriteLine("Your name is {0} and your age is {1,15:D}", name, age);
+
+
+
+            decimal[] amounts = { 16305.32m, 18794.16m };
+            Console.WriteLine("   Beginning Balance           Ending Balance");
+            Console.WriteLine("   {0,-28:C2}{1,14:C2}", amounts[0], amounts[1]);
+
+
+            // FORMAT:
+
+            Temperature temp1 = new Temperature(0);
+            Console.WriteLine("{0:C} (Celsius) = {0:K} (Kelvin) = {0:F} (Fahrenheit)\n", temp1);
+            Console.ReadKey();
+
+
+            // Use composite formatting with a format provider.
+            temp1 = new Temperature(-40);
+            Console.WriteLine(String.Format(CultureInfo.CurrentCulture, "{0:C} (Celsius) = {0:K} (Kelvin) = {0:F} (Fahrenheit)", temp1));
+            Console.WriteLine(String.Format(new CultureInfo("fr-FR"), "{0:C} (Celsius) = {0:K} (Kelvin) = {0:F} (Fahrenheit)\n", temp1));
+
+            // Call ToString method with format string.
+            temp1 = new Temperature(32);
+            Console.WriteLine("{0} (Celsius) = {1} (Kelvin) = {2} (Fahrenheit)\n",
+                              temp1.ToString("C"), temp1.ToString("K"), temp1.ToString("F"));
+
+
         }
         //vversion 7.2
         //void  Foo(in int x)
@@ -165,4 +219,62 @@ namespace TestTypes
 
 
     }
+
+    public class Temperature : IFormattable
+    {
+        private decimal temp;
+
+        public Temperature(decimal temperature)
+        {
+            if (temperature < -273.15m)
+                throw new ArgumentOutOfRangeException(String.Format("{0} is less than absolute zero.",
+                                                      temperature));
+            this.temp = temperature;
+        }
+
+        public decimal Celsius
+        {
+            get { return temp; }
+        }
+
+        public decimal Fahrenheit
+        {
+            get { return temp * 9 / 5 + 32; }
+        }
+
+        public decimal Kelvin
+        {
+            get { return temp + 273.15m; }
+        }
+
+        public override string ToString()
+        {
+            return this.ToString("G", CultureInfo.CurrentCulture);
+        }
+
+        public string ToString(string format)
+        {
+            return this.ToString(format, CultureInfo.CurrentCulture);
+        }
+
+        public string ToString(string format, IFormatProvider provider)
+        {
+            if (String.IsNullOrEmpty(format)) format = "G";
+            if (provider == null) provider = CultureInfo.CurrentCulture;
+
+            switch (format.ToUpperInvariant())
+            {
+                case "G":
+                case "C":
+                    return temp.ToString("F2", provider) + " °C";
+                case "F":
+                    return Fahrenheit.ToString("F2", provider) + " °F";
+                case "K":
+                    return Kelvin.ToString("F2", provider) + " K";
+                default:
+                    throw new FormatException(String.Format("The {0} format string is not supported.", format));
+            }
+        }
+    }
+
 }
